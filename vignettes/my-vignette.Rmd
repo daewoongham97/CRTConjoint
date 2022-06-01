@@ -260,7 +260,7 @@ provided by Amazon Web Services (AWS).
 We will leverage the RStudio Server in AWS maintained and provided by:
 https://www.louisaslett.com/RStudio_AMI/. We will now list the steps needed to use AWS Rstudio.
 
-* Step 1) Make an AWS account in: https://aws.amazon.com/account/sign-up. Then login.
+* Step 1) Sign up for an AWS account. Then login.
 * Step 2) Go to the above link: https://www.louisaslett.com/RStudio_AMI/ and click
 on the region closest to user's local region. For example, we click on US East, Ohio
 ami-07038... 
@@ -283,8 +283,8 @@ We recommend that the user has already written all necessary code to run on the 
 Since users will be charged hourly, it is recommended that they can directly run the code. 
 If the user runs with 50 cores, the runtime for a typical conjoint experiment should not 
 exceed more than 5-10 minutes for a single $p$-value with $B = 2000$,
-thus we do not believe any user to have to incur much fees. For any questions please do not hesitate to 
-contact me at: daewoongham at g dot harvard dot edu
+thus we do not believe any user to have to incur much fees. For any questions please 
+do not hesitate to contact me at: daewoongham at g dot harvard dot edu
 
 
 
