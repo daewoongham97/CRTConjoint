@@ -71,7 +71,7 @@ num_cores should not exceed the number of cores the user's machine can handle. D
 \item{lambda}{Numeric vector indicating lambda used for cross-validation for HierNet fit.
 Default lambda=c(20,30,40).}
 
-\item{tol}{Numeric integer indicating acceptable tolerance for terminating optimization
+\item{tol}{Numeric value indicating acceptable tolerance for terminating optimization
 fit for HierNet. Default is tol=1e-3. WARNING: Do not increase as it greatly increases
 computation time.}
 

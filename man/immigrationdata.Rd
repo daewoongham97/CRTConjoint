@@ -38,7 +38,7 @@ immigrationdata
 \description{
 This dataset is a subset of the first 1000 rows chosen from the original immigration dataset.
 Each row consists of a pair of immigrant candidates that were shown to respondents.
-The respondent then choses either the left or right profile (main binary response) from
+The respondent then chooses either the left or right profile (main binary response) from
 the nine profile factors shown for each candidate. Respondent characteristics are also recorded.
 For example, the first row shows that the left immigrant candidate was a Male from Iraq
 who had a high school degree, etc. while the right immigrant candidate was a Female from France

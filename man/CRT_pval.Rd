@@ -69,7 +69,7 @@ their own resamples in supplyown_resamples input. Default is design="Uniform"}
 Length of p should match number of levels of X or length of in_levs.}
 
 \item{constraint_randomization}{List containing levels of X that can only be
-sampled with certain values of Z.
+sampled with certain values of Z (used when design="Constrained Uniform").
 The first element of constraint_randomization should contain the levels of X
 that can only be sampled with certain values of Z, which are included in the
 second element of the list. See example below.}
@@ -82,9 +82,8 @@ profile values of X.}
 \item{profileorder_constraint}{Boolean indicating whether to enforce profile
 order constraint (default = TRUE)}
 
-\item{in_levs}{A vector of strings that are a subset of the levels of X when
-user wants to only test if there is any difference between a few levels of X.
-See example below.}
+\item{in_levs}{A vector of strings which indicates a subset of the levels of X to
+test for. See example below.}
 
 \item{forced_var}{A character string indicating column name of Z or V that user
 wishes to force an interaction with.}
@@ -107,7 +106,7 @@ num_cores should not exceed the number of cores the user's machine can handle. D
 \item{lambda}{Numeric vector indicating lambda used for cross-validation for
 HierNet fit. Default lambda=c(20,30,40).}
 
-\item{tol}{Numeric integer indicating acceptable tolerance for terminating optimization
+\item{tol}{Numeric value indicating acceptable tolerance for terminating optimization
 fit for HierNet. Default is tol=1e-3. WARNING: Do not increase as it greatly
 increases computation time.}
 

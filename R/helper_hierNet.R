@@ -136,7 +136,6 @@ hierNet_logistic_CV = function(lambda, nfolds = 3, X, y_var, seed = sample(1:100
   return(gotten_lam)
 }
 
-## these functions are taken directly from the hierNet package
 ggdescent.logistic <- function(xnum, zz, y, lam.l1, lam.l2, diagonal, rho, V, stepsize, backtrack=0.2, maxiter=100,
                                tol = 1e-3, aa=NULL, trace=1) {
   # See ADMM4 pdf and logistic.pdf for the problem this solves.

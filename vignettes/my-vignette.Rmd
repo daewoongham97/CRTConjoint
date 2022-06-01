@@ -249,9 +249,9 @@ fatigue_test$p_val
 
 ## Using CRTConjoint with Amazon Web Services
 An optional argument for all CRT functions in this package is the `num_cores` input.
-Currently it is set at 2 cores as the default. Although 2 cores may be fine for someone
-who is doing exploratory work with $B = 100$, for final reported $p$-values a much higher
-$B$ is recommended. A typical Mac laptop will only support up to `num_cores = 4`, which
+Currently it is set at 2 cores as the default. Although 2 cores may be sufficient for someone
+who is doing exploratory work with $B = 100$, the final reported $p$-values is recommended to
+have a much higher value of $B$. A typical Mac laptop will only support up to `num_cores = 4`, which
 may be unsatisfactory for researchers. For researchers with their own computing cluster, 
 this section is not applicable for them. However, for those with no easy access to computing
 cluster, we write this section to easily use our functions in powerful computing clusters
@@ -273,7 +273,7 @@ The user will be billed per hour. There are cheaper options.
 * Step 5) Press the "launch instance" orange button.
 * Step 6) After being redirected, MANUALLY copy and paste the link below "Public 
 IPv4 DNS". Then paste it on a new tab on google chrome. DO NOT press the open address
-button that is there as it does not work. 
+button as it does not work. 
 * Step 7) You will be prompted (might take a minute) to a RStudio login page. 
 Username: rstudio and password is your instance ID.
 * Step 8) You can now enjoy RStudio on this AWS server. Install CRTConjoint package

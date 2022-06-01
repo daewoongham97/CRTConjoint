@@ -42,7 +42,7 @@
 #' @param p A vector of nonuniform probability weights used when design="Nonuniform".
 #' Length of p should match number of levels of X or length of in_levs.
 #' @param constraint_randomization List containing levels of X that can only be
-#' sampled with certain values of Z.
+#' sampled with certain values of Z (used when design="Constrained Uniform").
 #' The first element of constraint_randomization should contain the levels of X
 #' that can only be sampled with certain values of Z, which are included in the
 #' second element of the list. See example below.
@@ -52,9 +52,8 @@
 #' profile values of X.
 #' @param profileorder_constraint Boolean indicating whether to enforce profile
 #' order constraint (default = TRUE)
-#' @param in_levs A vector of strings that are a subset of the levels of X when
-#' user wants to only test if there is any difference between a few levels of X.
-#' See example below.
+#' @param in_levs A vector of strings which indicates a subset of the levels of X to
+#' test for. See example below.
 #' @param forced_var A character string indicating column name of Z or V that user
 #' wishes to force an interaction with.
 #' @param non_factor A vector of strings indicating columns of data that are not
@@ -69,7 +68,7 @@
 #' @param nfolds Numeric integer indicating number of cross-validation folds. Default is 3.
 #' @param lambda Numeric vector indicating lambda used for cross-validation for
 #' HierNet fit. Default lambda=c(20,30,40).
-#' @param tol Numeric integer indicating acceptable tolerance for terminating optimization
+#' @param tol Numeric value indicating acceptable tolerance for terminating optimization
 #'  fit for HierNet. Default is tol=1e-3. WARNING: Do not increase as it greatly
 #'  increases computation time.
 #' @param speedup Boolean indicating whether to employ computational tricks to
@@ -357,7 +356,7 @@ CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL,
 #' @param nfolds Numeric integer indicating number of cross-validation folds. Default is 3.
 #' @param lambda Numeric vector indicating lambda used for cross-validation for HierNet fit.
 #' Default lambda=c(20,30,40).
-#' @param tol Numeric integer indicating acceptable tolerance for terminating
+#' @param tol Numeric value indicating acceptable tolerance for terminating
 #' optimization fit for HierNet. Default is tol=1e-3. WARNING: Do not increase
 #' as it greatly increases computation time.
 #' @param speedup Boolean indicating whether to employ computational tricks to
@@ -482,7 +481,7 @@ CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL,
 #' @param nfolds Numeric integer indicating number of cross-validation folds. Default is 3.
 #' @param lambda Numeric vector indicating lambda used for cross-validation for
 #' HierNet fit. Default lambda=c(20,30,40).
-#' @param tol Numeric integer indicating acceptable tolerance for terminating optimization
+#' @param tol Numeric value indicating acceptable tolerance for terminating optimization
 #' fit for HierNet. Default is tol=1e-3. WARNING: Do not increase as it greatly increases
 #'  computation time.
 #' @param seed Seed used for CRT procedure
@@ -688,7 +687,7 @@ CRT_carryovereffect = function(formula, data, left, right, task, design = "Unifo
 #' @param nfolds Numeric integer indicating number of cross-validation folds. Default is 3.
 #' @param lambda Numeric vector indicating lambda used for cross-validation for HierNet fit.
 #' Default lambda=c(20,30,40).
-#' @param tol Numeric integer indicating acceptable tolerance for terminating optimization
+#' @param tol Numeric value indicating acceptable tolerance for terminating optimization
 #' fit for HierNet. Default is tol=1e-3. WARNING: Do not increase as it greatly increases
 #' computation time.
 #' @param speedup Boolean indicating whether to employ computational tricks to make

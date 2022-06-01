@@ -101,7 +101,7 @@ PO_stat = function(hiernet_object, in_idx_left, in_idx_right, in_idx_respondent)
 
   respondent_effects = unlist(Map("+", R_int_list_left, R_int_list_right))
 
-  #division of two in the interactions because I overcount
+  #division of two in the interactions because of overcounting
   stat= sum((main_1 + main_2)^2) + sum(within_diff^2) + sum(between_diff^2) + sum((respondent_effects)^2)
   return(stat)
 }
@@ -121,6 +121,7 @@ CO_stat = function(hiernet_object, idx) {
 get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, profileorder_constraint, lambda, non_factor_idx, in_levs, analysis, p, resample_func_1, resample_func_2, tol, resample_X, full_X, restricted_X, left_allowed, right_allowed, forced, speedup, seed, supplyown_resamples, parallel, nfolds) {
   num_x_levs = levels(x[, xcols[1]])
 
+  # checks
   if (length(unique(sapply(x, class)[!(1:ncol(x)) %in% non_factor_idx])) > 1) stop("factors provided in formula are not all factors please supply non_factor_idx")
 
   if (!all(in_levs %in% num_x_levs)) stop("in_levs supplied are not levels in X")
@@ -354,7 +355,6 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
       }
 
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X_initial), final_df$Y, lam= best_lam, tol = tol)))
-      ## new changed way
     } else {
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X), final_df$Y, lam= best_lam, tol = tol)))
     }
@@ -581,7 +581,6 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
 
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X_initial), final_df$Y, lam= best_lam, tol = tol)))
 
-      ## new changed way
     } else {
 
       best_lam = hierNet_logistic_CV(lambda, nfolds = nfolds, X = X, y_var = final_df$Y, tol = tol, constraint = FALSE, seed = seed)
@@ -673,7 +672,6 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
     e = vector()
     for (j in 1:B) {
       set.seed(j + B)
-      source("script_AWS_source.R")
       x_df = x
 
       resampling_df = final_df
@@ -1085,7 +1083,6 @@ get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, no
       X_initial = model.matrix(form, resampled, contrasts.arg = lapply(resampled[, -c(non_factor_idx, final_df_var_idx, ncol(final_df))], contrasts, contrasts = FALSE))[, -1]
 
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X_initial), final_df$Y, lam= best_lam, tol = tol)))
-      ## new changed way
     } else {
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X), final_df$Y, lam= best_lam, tol = tol)))
     }
