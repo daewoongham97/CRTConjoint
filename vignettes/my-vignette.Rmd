@@ -1,0 +1,297 @@
+---
+title: "Using CRTConjoint"
+output: rmarkdown::html_vignette
+description: >
+  This vignette describes the basics of how to use CRTConjoint package along with
+  how to effectively use this in the Amazon Web Services parallel computing cluster.
+vignette: >
+  %\VignetteIndexEntry{Using CRTConjoint}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(CRTConjoint)
+```
+
+This vignette will go through examples cases listed in the package for all the main 
+functions with details on how to use the inputs. Finally, the last section contains
+detailed steps on how to use CRTConjoint with the Amazon Web Services computing cluster.
+
+## Understanding CRT_pval
+To begin, we start with understanding the main function `CRT_pval`. All examples 
+use the immigration choice conjoint experiment data from Hainmueller et. al. (2014).
+We first load this data from the package.
+```{r}
+data("immigrationdata")
+```
+Each row consists a pair of immigrant candidates that were shown to respondents.
+For example, the first row shows that the left immigrant candidate was a Male from Iraq
+who had a high school degree while the right immigrant candidate was a Female from France
+with no formal education. The respondent who evaluated this task was a 20 year old 
+college educated White Male, who voted for the left immigrant candidate. 
+
+In the first example, we aim to understand if the candidate's education matters
+for immigration preferences. To test this, `CRT_pval` requires users to specify
+all factors and respondent factors of interest in the `formula` input along with 
+the binary response. `CRT_pval` requires us to additionally specify which of 
+the factors are the left and right profiles. 
+```{r}
+form = formula("Y ~ FeatEd + FeatGender + FeatCountry + FeatReason + FeatJob +
+FeatExp + FeatPlans + FeatTrips + FeatLang + ppage + ppeducat + ppethm + ppgender")
+left = colnames(immigrationdata)[1:9]
+right = colnames(immigrationdata)[10:18]
+left; right
+```
+Users can see that the left and right profile factors are aligned, i.e., the first entry
+is the education for both the left and right profiles. It is important that they
+are expected to be aligned. We also note that the formula only contains the factors
+for the left profile. This is sufficient as the algorithm will take the left and right 
+input to use both left and right profile attributes for testing the hypothesis. Lastly,
+we include all respondent characteristics (ppage, ppeducat, etc.) to boost power. 
+We are ready to now run `CRT_pval` to test whether education matters.
+```{r, eval = FALSE}
+education_test = CRT_pval(formula = form, data = immigrationdata, X = "FeatEd",
+ left = left, right = right, non_factor = "ppage", B = 100, analysis = 2)
+education_test$p_val
+```
+We again note `X = "FeatEd"` is sufficient to clarify which factor we are testing for. 
+Because the function assumes all attributes in conjoint experiments are of class factor,
+if there are variables that are not factor class, for example
+respondent age (ppage), the function must know which are these non-factor variables. 
+Furthermore, to save time we only run it for $B = 100$ resamples. Lastly, 
+we set $analysis = 2$ to also allow the function to spit out two of the strongest 
+interactions that contributed to the observed test statistic. We note that this 
+is purely for exploratory purposes. 
+
+The output should contain not only the $p$-value but also the observed test statistic, 
+all the resampled test statistic, etc. The function will also show a progress bar 
+to show the percentage of resamples the user is finished with. 
+
+### Using constrained randomization design
+Since the immigrant's education was uniformly sampled, we did not need to specify 
+the design because the default design was uniform. However, there are some factors
+that used more complex design. One such factor was job (FeatJob). For this experiment,
+the candidate's occupation could only be financial analyst, computer programmer, research
+scientist, and doctor if their education degree was equivalent to at least some level of 
+college. Because this constrained uniform design is popular in conjoint experiments,
+we allow the function to account for this design so long as the user specifies the 
+constraints. We now show, using the same example, how to specify this constraint. 
+```{r, eval = FALSE}
+constraint_randomization = list() # (Job has dependent randomization scheme)
+constraint_randomization[["FeatJob"]] = c("Financial analyst","Computer programmer",
+"Research scientist","Doctor")
+constraint_randomization[["FeatEd"]] = c("Equivalent to completing two years of
+college in the US", "Equivalent to completing a graduate degree in the US",
+ "Equivalent to completing a college degree in the US")
+```
+The `constraint_randomization` list is a list of length two. The first element contains
+the levels of job that can only be randomized with certain levels of education.
+The second element of the list contains the levels of education that allows the aforementioned
+jobs to have positive probability. The listed levels are assumed to match the levels in the supplied 
+data. Additionally, the names of the list is also assumed to match the column names in the supplied data.
+We note that the user only has to supply the constraint for either the left or right factor
+and the function will assume the constraint randomization scheme is the same for both left 
+and right factors, i.e., same for FeatJob_2 and FeatEd_2. 
+```{r, eval = FALSE}
+job_test = CRT_pval(formula = form, data = immigrationdata, X = "FeatJob",
+left = left, right = right, design = "Constrained Uniform",
+constraint_randomization = constraint_randomization, non_factor = "ppage", B = 100)
+job_test$p_val
+```
+Once, we have the constraint list, we input it into the `constraint_randomization` input, 
+after stating that the `design = "Constrained Uniform"`. We supply other examples
+when a user has a nonuniform (but no constraints) design and how to force a variable
+to include as an interaction in the examples. 
+
+## Understanding extensions of CRT
+We provide three other CRT functions that take similar inputs but tests regularity conditions
+often invoked in conjoint experiments. The first aims to test the profile order 
+effect (`CRT_profileordereffect`), i.e., whether or not being in the left or right has 
+any impact on the response. The syntax for such a test is straightforward.
+```{r, eval = FALSE}
+profileorder_test = CRT_profileordereffect(formula = form, data = immigrationdata,
+ left = left, right = right, B = 100)
+profileorder_test$p_val
+```
+Testing the carryover effect and fatigue effect is slightly more complex. When testing
+the carryover effect, it requires resampling all the left and right factors. The default
+`design = "Uniform"` assumes that all factors were uniformly sampled. If that is not the case,
+(which the immigration example is not) we need to supply our own resamples. To do this,
+we build our resampling function,
+```{r, eval = FALSE}
+resample_func_immigration = function(x, seed = sample(c(0, 1000), size = 1), left_idx, right_idx) {
+ set.seed(seed)
+ df = x[, c(left_idx, right_idx)]
+ variable = colnames(x)[c(left_idx, right_idx)]
+ len = length(variable)
+ resampled = list()
+ n = nrow(df)
+ for (i in 1:len) {
+   var = df[, variable[i]]
+   lev = levels(var)
+   resampled[[i]] = factor(sample(lev, size = n, replace = TRUE))
+ }
+
+ resampled_df = data.frame(resampled[[1]])
+ for (i in 2:len) {
+   resampled_df = cbind(resampled_df, resampled[[i]])
+ }
+ colnames(resampled_df) = colnames(df)
+
+ #escape persecution was dependently randomized
+ country_1 = resampled_df[, "FeatCountry"]
+ country_2 = resampled_df[, "FeatCountry_2"]
+ i_1 = which((country_1 == "Iraq" | country_1 == "Sudan" | country_1 == "Somalia"))
+ i_2 = which((country_2 == "Iraq" | country_2 == "Sudan" | country_2 == "Somalia"))
+
+ reason_1 = resampled_df[, "FeatReason"]
+ reason_2 = resampled_df[, "FeatReason_2"]
+ levs = levels(reason_1)
+ r_levs = levs[c(2,3)]
+
+ reason_1 = sample(r_levs, size = n, replace = TRUE)
+
+ reason_1[i_1] = sample(levs, size = length(i_1), replace = TRUE)
+
+ reason_2 = sample(r_levs, size = n, replace = TRUE)
+
+ reason_2[i_2] = sample(levs, size = length(i_2), replace = TRUE)
+
+ resampled_df[, "FeatReason"] = reason_1
+ resampled_df[, "FeatReason_2"] = reason_2
+
+ #profession high skill fix
+ educ_1 = resampled_df[, "FeatEd"]
+ educ_2 = resampled_df[, "FeatEd_2"]
+ i_1 = which((educ_1 == "Equivalent to completing two years of college in the US" |
+  educ_1 == "Equivalent to completing a college degree in the US" |
+  educ_1 == "Equivalent to completing a graduate degree in the US"))
+ i_2 = which((educ_2 == "Equivalent to completing two years of college in the US" |
+ educ_2 == "Equivalent to completing a college degree in the US" |
+ educ_2 == "Equivalent to completing a graduate degree in the US"))
+
+
+ job_1 = resampled_df[, "FeatJob"]
+ job_2 = resampled_df[, "FeatJob_2"]
+ levs = levels(job_1)
+ # take out computer programmer, doctor, financial analyst, and research scientist
+ r_levs = levs[-c(2,4,5, 9)]
+
+ job_1 = sample(r_levs, size = n, replace = TRUE)
+
+ job_1[i_1] = sample(levs, size = length(i_1), replace = TRUE)
+
+ job_2 = sample(r_levs, size = n, replace = TRUE)
+
+ job_2[i_2] = sample(levs, size = length(i_2), replace = TRUE)
+
+ resampled_df[, "FeatJob"] = job_1
+ resampled_df[, "FeatJob_2"] = job_2
+
+ resampled_df[colnames(resampled_df)] = lapply(resampled_df[colnames(resampled_df)], factor )
+
+ return(resampled_df)
+}
+```
+This resampling function takes the data (x) as an input and given the indexes of the
+left and right profile attributes, it returns a completely new resampled dataframe of 
+the same dimension as x. As stated above, because testing the carryover effect requires
+resampling all the attributes B times, we must supply all the manually 
+resampled dataframes. To do this we store them in a list of length B, each containing
+a resampled data of all the left and right attributes. We store this in `own_resamples`.
+```{r, eval = FALSE}
+carryover_df = immigrationdata
+own_resamples = list()
+B = 100
+for (i in 1:B) {
+ newdf = resample_func_immigration(carryover_df, left_idx = 1:9, right_idx = 10:18, seed = i)
+ own_resamples[[i]] = newdf
+}
+```
+Lastly, the carryover test requires a column that indicates the task evaluation number
+for each row. In the immigration experiment, each respondent rated five tasks and the data
+is sorted by each task, i.e., the first five rows are the first five tasks for the first respondent. 
+Consequently, we can define a new column, task, that iterates 1 to 5 and run the main function.
+NOTE: it is important that the task variable has no missing tasks, i.e., a respondent that
+only rated four tasks while all other respondents rated five tasks. If there is such a respondent,
+please drop it before using this function. 
+
+```{r, eval = FALSE}
+J = 5
+carryover_df$task = rep(1:J, nrow(carryover_df)/J)
+
+carryover_test = CRT_carryovereffect(formula = form, data = carryover_df, left = left,
+right = right, task = "task", supplyown_resamples = own_resamples, B = B)
+carryover_test$p_val
+```
+
+Lastly, to test the fatigue effect, we only need to additionally specify the respondent
+index. Like the task column, we similarly repeat 1 to 200 five times and store it
+in a new column called respondent. 
+```{r, eval = FALSE}
+fatigue_df = immigrationdata
+fatigue_df$task = rep(1:J, nrow(fatigue_df)/J)
+fatigue_df$respondent = rep(1:(nrow(fatigue_df)/J), each = J)
+
+fatigue_test = CRT_fatigueeffect(formula = form, data = fatigue_df, left = left,
+right = right, task = "task", respondent = "respondent", B = 100)
+fatigue_test$p_val
+```
+
+
+## Using CRTConjoint with Amazon Web Services
+An optional argument for all CRT functions in this package is the `num_cores` input.
+Currently it is set at 2 cores as the default. Although 2 cores may be fine for someone
+who is doing exploratory work with $B = 100$, for final reported $p$-values a much higher
+$B$ is recommended. A typical Mac laptop will only support up to `num_cores = 4`, which
+may be unsatisfactory for researchers. For researchers with their own computing cluster, 
+this section is not applicable for them. However, for those with no easy access to computing
+cluster, we write this section to easily use our functions in powerful computing clusters
+provided by Amazon Web Services (AWS). 
+
+We will leverage the RStudio Server in AWS maintained and provided by:
+https://www.louisaslett.com/RStudio_AMI/. We will now list the steps needed to use AWS Rstudio.
+
+* Step 1) Make an AWS account in: https://aws.amazon.com/account/sign-up. Then login.
+* Step 2) Go to the above link: https://www.louisaslett.com/RStudio_AMI/ and click
+on the region closest to user's local region. For example, we click on US East, Ohio
+ami-07038... 
+* Step 3) This will redirect you to a new page. Under instance type select the desired
+instance type. The number next to vCPU indicates the number of cores available. We
+recommend c5a.16xlarge with 64 cores. Please note that this costs 2.4 USD per hour.
+The user will be billed per hour. There are cheaper options. 
+* Step 4) After selecting instance type, scroll down to "Network settings". Make sure
+"Allow SSH Traffic" is set to "Anywhere". Also tick "Allow HTTP traffic from the internet". 
+* Step 5) Press the "launch instance" orange button.
+* Step 6) After being redirected, MANUALLY copy and paste the link below "Public 
+IPv4 DNS". Then paste it on a new tab on google chrome. DO NOT press the open address
+button that is there as it does not work. 
+* Step 7) You will be prompted (might take a minute) to a RStudio login page. 
+Username: rstudio and password is your instance ID.
+* Step 8) You can now enjoy RStudio on this AWS server. Install CRTConjoint package
+set num_cores to the desired cores and run the CRT functions faster! 
+
+We recommend that the user has already written all necessary code to run on the AWS. 
+Since users will be charged hourly, it is recommended that they can directly run the code. 
+If the user runs with 50 cores, the runtime for a typical conjoint experiment should not 
+exceed more than 5-10 minutes for a single $p$-value with $B = 2000$,
+thus we do not believe any user to have to incur much fees. For any questions please do not hesitate to 
+contact me at: daewoongham at g dot harvard dot edu
+
+
+
+
+
+
+
+
+
+
