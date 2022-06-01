@@ -1,39 +1,47 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 
 # CRTConjoint
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of CRTConjoint is to use the conditional randomization test
-(CRT) to test for various hypothesis in conjoint experiments. In
-particular, `CRT_pval` aims to test whether a factor matters in any way.
-For example, does education matter in immigration preferences given
-other attributes of the candidate.
+The goal of CRTConjoint is to use the conditional randomization test (CRT) to 
+test for various hypothesis in conjoint experiments. In particular, `CRT_pval`
+aims to test whether a factor matters in any way. For example, does education matter
+in immigration preferences given other attributes of the candidate.
 
 ## Installation
 
-You can install CRTConjoint from
-[GitHub](https://github.com/daewoongham97/CRTConjoint) with:
-
+You can install CRTConjoint from [GitHub](https://github.com/daewoongham97/CRTConjoint) with:
 ``` r
 # install.packages("devtools")
 devtools::install_github("daewoongham97/CRTConjoint")
 ```
 
 or directly from CRAN with:
-
 ``` r
 install.packages("CRTConjoint")
 ```
 
 ## Example
 
-This is a basic example which shows you how to test whether education
-matters for immigration preferences.
+This is a basic example which shows you how to test whether education matters
+for immigration preferences.
 
-``` r
+```{r example, eval = FALSE}
 library(CRTConjoint)
 
 #
@@ -48,4 +56,6 @@ right = colnames(immigrationdata)[10:18]
 education_test = CRT_pval(formula = form, data = immigrationdata, X = "FeatEd",
  left = left, right = right, non_factor = "ppage", B = 100, analysis = 2)
 education_test$p_val
+
 ```
+
