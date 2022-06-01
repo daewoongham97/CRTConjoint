@@ -8,4 +8,12 @@
 \description{
 Computes p-value according to the CRT using the HierNet test statistic. For more details, see Ham, Imai, Janson (2022) "Using Machine Learning to Test Causal Hypotheses in Conjoint Analysis".
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/daewoongham97/CRTConjoint}
+  \item Report bugs at \url{https://github.com/daewoongham97/CRTConjoint/issues}
+}
+
+}
 \keyword{internal}
