@@ -23,3 +23,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/daewoongham97/CRTConjoint
+BugReports: https://github.com/daewoongham97/CRTConjoint/issues
