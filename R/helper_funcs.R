@@ -1,12 +1,4 @@
-# Main HierNet test statistic as implemented in Equation 5 and 11
-# Additional inputs:
-# Analysis: if TRUE function also returns which interactions are strongest
-# Forced: if non-null takes input of which indexes of X matrix we wish to "force" as main effect (see Section 5.2 for further details)
-# Group: list (total length of unlisted list should match idx) that "groups" up all relevant interested indexes in idx to implement Equation 5 (only necessary when idx contains indexes we do not want to average the respective effects for and compare together as done in Equation 5)
-# Immigration Example: idx = indexes of matrix X that refer to Mexico or European (length of 2)
-# Gender Example: idx = indexes of matrix X that refers to Male or Female and all forced Male/Female interactions with Party
-# Gender Example: forced = indexes of matrix X of all forced interactions with party affiliation and party affiliation main effects
-# Gender Example: group = list(c(1,2), c(3, 4), c(5, 6), c(7,8), c(9, 10)), where c(1,2) for example compares all main and interaction of just male and female. c(3,4) compares all main and interaction effects of male and one factor level from party affiliation, etc.
+# Obtaining main HierNet test statistic
 hiernet_group = function(hiernet_object, idx, X, analysis = 0, group) {
   main = hiernet_object$bp[idx] - hiernet_object$bn[idx]
   main_contribution = vector()
@@ -51,7 +43,6 @@ hiernet_group = function(hiernet_object, idx, X, analysis = 0, group) {
     largest_ints = unlist(largest_ints)
     largest_ints_idx = unlist(largest_ints_idx)
 
-    #take first and third index (since the second one is a repeat of the first)
     largest_ints_final = sort(largest_ints, decreasing = TRUE)[seq(1, (2*analysis), by = 2)]
 
     largest_int_contributer = largest_ints_idx[order(largest_ints, decreasing = TRUE)[seq(1, (2*analysis), by = 2)]]
@@ -71,7 +62,7 @@ hiernet_group = function(hiernet_object, idx, X, analysis = 0, group) {
   }
 }
 
-# Implementing Test statistic to test no profile order effect (equation in Section 3.5)
+# Obtaining profile order effect test statistic
 PO_stat = function(hiernet_object, in_idx_left, in_idx_right, in_idx_respondent) {
   main_1 = hiernet_object$bp[in_idx_left] - hiernet_object$bn[in_idx_left]
   main_2 = hiernet_object$bp[in_idx_right] - hiernet_object$bn[in_idx_right]
@@ -115,7 +106,7 @@ PO_stat = function(hiernet_object, in_idx_left, in_idx_right, in_idx_respondent)
   return(stat)
 }
 
-# Implementing Test statistic to test carryover effect (equation in Section 3.5)
+# Obtaining carryover effect test statistic
 CO_stat = function(hiernet_object, idx) {
   I_list = list()
   for (i in 1:length(idx)) {
@@ -125,6 +116,8 @@ CO_stat = function(hiernet_object, idx) {
   return(ts)
 }
 
+
+# Main helper function that performs CRT to test for Y independent of X given Z
 get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, profileorder_constraint, lambda, non_factor_idx, in_levs, analysis, p, resample_func_1, resample_func_2, tol, resample_X, full_X, restricted_X, left_allowed, right_allowed, forced, speedup, seed, supplyown_resamples, parallel, nfolds) {
   num_x_levs = levels(x[, xcols[1]])
 
@@ -538,6 +531,7 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
   return(out)
 }
 
+# Main helper function that performs CRT to test for no profile order effect
 get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, nfolds) {
 
   if (unique(sapply(x[, left_idx[!(left_idx %in% non_factor_idx)]], class)) != "factor") stop("left and right factors are not all factors please supply non_factor_idx")
@@ -734,6 +728,7 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
 
 }
 
+# Main helper function that performs CRT to test for no carryover effect
 get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, seed, parallel, profileorder_constraint, task_var, resample_func, supplyown_resamples, nfolds) {
 
   if (unique(sapply(x[, left_idx[!(left_idx %in% non_factor_idx)]], class)) != "factor") stop("left and right factors are not all factors please supply non_factor_idx")
@@ -1007,6 +1002,7 @@ get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, 
   return(out)
 }
 
+# Main helper function that performs CRT to test for no fatigue effect
 get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, profileorder_constraint, task_var, respondent_var, nfolds) {
 
   if (unique(sapply(x[, left_idx[!(left_idx %in% non_factor_idx)]], class)) != "factor") stop("left and right factors are not all factors please supply non_factor_idx")

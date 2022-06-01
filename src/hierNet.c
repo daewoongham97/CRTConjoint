@@ -1,6 +1,6 @@
 /*
- Find optimal alpha for onerow optimization in ADMM4 within prox of
- generalized gradient descent.
+ All functions here are directly taken from Jacob Bien with explicit permission from
+ the authors. Source: https://github.com/cran/hierNet/blob/master/src/hierNet.c
  */
 
 #include <R.h>

@@ -98,10 +98,9 @@ the observed test statistic}
 }
 \description{
 This function takes a conjoint dataset and returns the p-value when using the
-CRT to test if the carryorder effect holds using HierNet test statistic.
-The function requires user to specify the outcome and all factors used in the
-conjoint experiment and any additional respondent characteristics. By default,
-this function
+CRT to test if the carryover effect holds using HierNet test statistic.
+The function requires user to specify the outcome, all factors used in the
+conjoint experiment, and the evaluation task number. By default, this function
 assumes a uniform randomization of factor levels. The function assumes the
 forced choice conjoint experiment and consequently assumes
 the data to contain the left and right profile factors in separate column in

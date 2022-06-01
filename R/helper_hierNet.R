@@ -1,5 +1,6 @@
-# slight computational modifications of functions from hierNet package
-# prediction function (modified from original predict.hiernet in hierNet package)
+# slight computational modifications of functions from hierNet package to quicken computation
+# All functions here are originally from author Jacob Bien source: https://github.com/cran/hierNet
+# All functions here are used with explicit permission from Jacob Bien
 predict_new <- function(object, newx, newzz=NULL, ...) {
   n <- nrow(newx)
 

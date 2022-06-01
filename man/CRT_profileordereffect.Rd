@@ -83,8 +83,8 @@ for the observed test statistic}
 \description{
 This function takes a conjoint dataset and returns the p-value when using the
 CRT to test if the profile order effect holds using HierNet test statistic.
-The function requires user to specify the outcome and all factors used in the
-conjoint experiment and any additional respondent characteristics.
+The function requires user to specify the outcome, all factors used in the
+conjoint experiment, and any additional respondent characteristics.
 The function assumes the forced choice conjoint experiment and consequently
 assumes the data to contain the left and right profile factors in separate column
 in the dataset supplied.

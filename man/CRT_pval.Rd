@@ -2,7 +2,7 @@
 % Please edit documentation in R/main_funcs.R
 \name{CRT_pval}
 \alias{CRT_pval}
-\title{Testing whether factor matters in Conjoint Experiments}
+\title{Testing whether factor X matters in Conjoint Experiments}
 \usage{
 CRT_pval(
   formula,
@@ -43,7 +43,7 @@ the formula above are expected to be of class factor unless explicitly stated
 in non_factor input.}
 
 \item{X}{Character string specifying the variable of interest. This character
-should match column name of X in data. For example "Country_left" is sufficient.}
+should match column name in data. For example "Country_left" is sufficient.}
 
 \item{left}{Vector of column names of data that corresponds to the left profile factors}
 
@@ -59,12 +59,13 @@ design where all (X,Z) are sampled uniformly. "Nonuniform" refers to a design wh
 If design="Nonuniform", then user should supply the non-uniform probability weights in p.
 If in_levs is not NULL, then length of p should match in_levs. "Constrained Uniform"
 refers to a dependent randomization design where some levels of X are only
-possible based on certain levels of Z. See examples below. If design="Constrained Uniform"
+possible based on certain levels of Z. If design="Constrained Uniform"
 user should supply constraint_randomization list indicating the dependencies.
+See examples below.
 "Manual" refers to more complex conjoint designs, where the user will supply
-their own resamples in supplyown_resamples input.}
+their own resamples in supplyown_resamples input. Default is design="Uniform"}
 
-\item{p}{A vector of nonuniform probability weights when design="Nonuniform".
+\item{p}{A vector of nonuniform probability weights used when design="Nonuniform".
 Length of p should match number of levels of X or length of in_levs.}
 
 \item{constraint_randomization}{List containing levels of X that can only be
@@ -116,9 +117,11 @@ make function run faster. It is always recommended to use default speedup=TRUE.}
 \item{seed}{Seed used for CRT procedure}
 
 \item{analysis}{Numeric integer indicating whether to return the top x number
-of strongest interactions in the observed test statistic. Default analysis = 0 to not
-return any top interactions. If analysis > 0, for example analysis = 2, then
-the top two strongest interactions contribution to the test statistic along with which interaction is returned. NOTE: this is purely for exploratory analysis.}
+of strongest interactions that contributed to the the observed test statistic.
+Default analysis = 0 to not return any top interactions. If analysis > 0,
+for example analysis = 2, then the top two strongest interactions contribution to
+the test statistic along with which interaction is returned.
+NOTE: this is purely for exploratory analysis.}
 }
 \value{
 A list containing: \item{p_val}{A numeric value for the p-value testing
@@ -136,13 +139,13 @@ the observed test statistic}
 }
 \description{
 This function takes a conjoint dataset and returns the p-value when using the
-CRT to test if Y independent of X given Z using HierNet test statistic.
-The function requires user to specify the outcome and all factors used in the
-conjoint experiment and any additional respondent characteristics. By default,
+CRT to test if Y is independent of X given Z using HierNet test statistic.
+The function requires user to specify the outcome, all factors used in the
+conjoint experiment, and any additional respondent characteristics. By default,
 this function assumes a uniform randomization of factor levels. In addition,
 the function assumes the forced choice conjoint experiment and consequently assumes
-the data to contain the left and right profile factors in separate column in the
-dataset supplied.
+the data to contain the left and right profile factors in separate columns in the
+supplied dataset.
 }
 \examples{
 # Subset of Immigration Choice Conjoint Experiment Data from Hainmueller et. al. (2014).

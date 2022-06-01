@@ -1,14 +1,14 @@
 # main functions to be exported
-#' Testing whether factor matters in Conjoint Experiments
+#' Testing whether factor X matters in Conjoint Experiments
 #'
 #' This function takes a conjoint dataset and returns the p-value when using the
-#' CRT to test if Y independent of X given Z using HierNet test statistic.
-#' The function requires user to specify the outcome and all factors used in the
-#' conjoint experiment and any additional respondent characteristics. By default,
+#' CRT to test if Y is independent of X given Z using HierNet test statistic.
+#' The function requires user to specify the outcome, all factors used in the
+#' conjoint experiment, and any additional respondent characteristics. By default,
 #' this function assumes a uniform randomization of factor levels. In addition,
 #' the function assumes the forced choice conjoint experiment and consequently assumes
-#' the data to contain the left and right profile factors in separate column in the
-#' dataset supplied.
+#' the data to contain the left and right profile factors in separate columns in the
+#' supplied dataset.
 #'
 #' @param formula A formula object specifying the outcome variable on the left-hand side
 #'  and factors of (X,Z) and respondent characteristics (V) in the right hand side.
@@ -21,7 +21,7 @@
 #' the formula above are expected to be of class factor unless explicitly stated
 #' in non_factor input.
 #' @param X Character string specifying the variable of interest. This character
-#' should match column name of X in data. For example "Country_left" is sufficient.
+#' should match column name in data. For example "Country_left" is sufficient.
 #' @param left Vector of column names of data that corresponds to the left profile factors
 #' @param right Vector of column names of data that corresponds to the right profile factors.
 #' NOTE: left and right are assumed to be the same length and the
@@ -34,11 +34,12 @@
 #' If design="Nonuniform", then user should supply the non-uniform probability weights in p.
 #' If in_levs is not NULL, then length of p should match in_levs. "Constrained Uniform"
 #' refers to a dependent randomization design where some levels of X are only
-#' possible based on certain levels of Z. See examples below. If design="Constrained Uniform"
-#'  user should supply constraint_randomization list indicating the dependencies.
+#' possible based on certain levels of Z. If design="Constrained Uniform"
+#' user should supply constraint_randomization list indicating the dependencies.
+#' See examples below.
 #' "Manual" refers to more complex conjoint designs, where the user will supply
-#' their own resamples in supplyown_resamples input.
-#' @param p A vector of nonuniform probability weights when design="Nonuniform".
+#' their own resamples in supplyown_resamples input. Default is design="Uniform"
+#' @param p A vector of nonuniform probability weights used when design="Nonuniform".
 #' Length of p should match number of levels of X or length of in_levs.
 #' @param constraint_randomization List containing levels of X that can only be
 #' sampled with certain values of Z.
@@ -75,9 +76,11 @@
 #' make function run faster. It is always recommended to use default speedup=TRUE.
 #' @param seed Seed used for CRT procedure
 #' @param analysis Numeric integer indicating whether to return the top x number
-#' of strongest interactions in the observed test statistic. Default analysis = 0 to not
-#' return any top interactions. If analysis > 0, for example analysis = 2, then
-#' the top two strongest interactions contribution to the test statistic along with which interaction is returned. NOTE: this is purely for exploratory analysis.
+#' of strongest interactions that contributed to the the observed test statistic.
+#' Default analysis = 0 to not return any top interactions. If analysis > 0,
+#' for example analysis = 2, then the top two strongest interactions contribution to
+#' the test statistic along with which interaction is returned.
+#' NOTE: this is purely for exploratory analysis.
 #'
 #' @return A list containing: \item{p_val}{A numeric value for the p-value testing
 #' Y independent of X given Z.}
@@ -320,8 +323,8 @@ CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL,
 #'
 #' This function takes a conjoint dataset and returns the p-value when using the
 #'  CRT to test if the profile order effect holds using HierNet test statistic.
-#' The function requires user to specify the outcome and all factors used in the
-#'  conjoint experiment and any additional respondent characteristics.
+#' The function requires user to specify the outcome, all factors used in the
+#' conjoint experiment, and any additional respondent characteristics.
 #' The function assumes the forced choice conjoint experiment and consequently
 #' assumes the data to contain the left and right profile factors in separate column
 #'  in the dataset supplied.
@@ -431,10 +434,9 @@ CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL,
 #' Testing carryover effect in Conjoint Experiments
 #'
 #' This function takes a conjoint dataset and returns the p-value when using the
-#' CRT to test if the carryorder effect holds using HierNet test statistic.
-#' The function requires user to specify the outcome and all factors used in the
-#'  conjoint experiment and any additional respondent characteristics. By default,
-#'   this function
+#' CRT to test if the carryover effect holds using HierNet test statistic.
+#' The function requires user to specify the outcome, all factors used in the
+#' conjoint experiment, and the evaluation task number. By default, this function
 #' assumes a uniform randomization of factor levels. The function assumes the
 #' forced choice conjoint experiment and consequently assumes
 #' the data to contain the left and right profile factors in separate column in
@@ -646,8 +648,8 @@ CRT_carryovereffect = function(formula, data, left, right, task, design = "Unifo
 #'
 #' This function takes a conjoint dataset and returns the p-value when using the
 #' CRT to test if the fatigue effect holds using HierNet test statistic.
-#' The function requires user to specify the outcome and all factors used in the
-#' conjoint experiment and any additional respondent characteristics.
+#' The function requires user to specify the outcome, all factors used in the
+#' conjoint experiment, and both the evaluation task number and respondent index.
 #' The function assumes the forced choice conjoint experiment and consequently
 #' assumes the data to contain the left and right profile factors in separate
 #' column in the dataset supplied.
