@@ -17,17 +17,17 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Ham Dae Woong \email{daewoongham@g.harvard.edu}
+\strong{Maintainer}: Dae Woong Ham \email{daewoongham@g.harvard.edu}
 
 Authors:
 \itemize{
-  \item Imai Kosuke \email{imai@harvard.edu}
-  \item Janson Lucas \email{ljanson@fas.harvard.edu}
+  \item Kosuke Imai \email{imai@harvard.edu}
+  \item Lucas Janson \email{ljanson@fas.harvard.edu}
 }
 
 Other contributors:
 \itemize{
-  \item Bien Jacob \email{jbien@usc.edu} [contributor]
+  \item Jacob Bien \email{jbien@usc.edu} [contributor]
 }
 
 }
