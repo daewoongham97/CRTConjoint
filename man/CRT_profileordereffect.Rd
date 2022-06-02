@@ -97,7 +97,7 @@ FeatExp + FeatPlans + FeatTrips + FeatLang + ppage + ppeducat + ppethm + ppgende
 left = colnames(immigrationdata)[1:9]
 right = colnames(immigrationdata)[10:18]
 
-# Testing is profile order effect is present or not in immigration data
+# Testing if profile order effect is present or not in immigration data
 \dontrun{
 profileorder_test = CRT_profileordereffect(formula = form, data = immigrationdata,
  left = left, right = right, B = 100)

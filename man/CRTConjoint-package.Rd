@@ -6,13 +6,23 @@
 \alias{CRTConjoint-package}
 \title{CRTConjoint: Conditional Randomization Testing (CRT) Approach for Conjoint Analysis}
 \description{
-Computes p-value according to the CRT using the HierNet test statistic. For more details, see Ham, Imai, Janson (2022) "Using Machine Learning to Test Causal Hypotheses in Conjoint Analysis".
+Computes p-value according to the CRT using the HierNet test statistic. For more details, see Ham, Imai, Janson (2022) "Using Machine Learning to Test Causal Hypotheses in Conjoint Analysis" \href{https://arxiv.org/abs/2201.08343}{arXiv:2201.08343}.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/daewoongham97/CRTConjoint}
   \item Report bugs at \url{https://github.com/daewoongham97/CRTConjoint/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Ham Dae Woong \email{daewoongham@g.harvard.edu}
+
+Authors:
+\itemize{
+  \item Imai Kosuke \email{imai@harvard.edu}
+  \item Janson Lucas \email{ljanson@fas.harvard.edu}
 }
 
 }
