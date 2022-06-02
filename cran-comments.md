@@ -1,6 +1,6 @@
 ## Test environments
-* local R installation (Windows), R 4.1.0
-* local R installation (macOS), R 4.1.0
+* local R installation (Windows), R 4.1.3
+* local R installation (macOS), R 4.1.3
 
 ## R CMD check results
 

@@ -4,6 +4,8 @@
 # CRTConjoint
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/daewoongham97/CRTConjoint/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/daewoongham97/CRTConjoint/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of CRTConjoint is to use the conditional randomization test
@@ -36,7 +38,7 @@ matters for immigration preferences.
 ``` r
 library(CRTConjoint)
 
-#
+# Immigration data
 data("immigrationdata")
 form = formula("Y ~ FeatEd + FeatGender + FeatCountry + FeatReason + FeatJob +
 FeatExp + FeatPlans + FeatTrips + FeatLang + ppage + ppeducat + ppethm + ppgender")
