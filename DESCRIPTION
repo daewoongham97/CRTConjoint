@@ -3,7 +3,7 @@ Title: Conditional Randomization Testing (CRT) Approach for Conjoint Analysis
 Version: 0.0.0.9000
 Author: Dae Woong Ham, Lucas Janson, Kosuke Imai
 Maintainer: Dae Woong Ham <daewoongham@g.harvard.edu>
-Description: Computes p-value according to the CRT using the HierNet test statistic. For more details, see Ham, Imai, Janson (2022) "Using Machine Learning to Test Causal Hypotheses in Conjoint Analysis".
+Description: Computes p-value according to the CRT using the HierNet test statistic. For more details, see Ham, Imai, Janson (2022) "Using Machine Learning to Test Causal Hypotheses in Conjoint Analysis" <arXiv:2201.08343>.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
