@@ -1,6 +1,10 @@
 ## Test environments
-* local R installation (Windows), R 4.1.3
 * local R installation (macOS), R 4.1.3
+* macOS-latest (on GitHub Actions), (release)
+* windows-latest (on GitHub Actions), (release)
+* ubuntu-latest (on GitHub Actions), (release)
+* ubuntu-latest (on GitHub Actions), (old release)
+* ubuntu-latest (on GitHub Actions), (devel)
 
 ## R CMD check results
 
