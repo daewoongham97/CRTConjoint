@@ -25,5 +25,10 @@ Authors:
   \item Janson Lucas \email{ljanson@fas.harvard.edu}
 }
 
+Other contributors:
+\itemize{
+  \item Bien Jacob \email{jbien@usc.edu} [contributor]
+}
+
 }
 \keyword{internal}
