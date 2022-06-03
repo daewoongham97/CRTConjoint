@@ -9,6 +9,7 @@
 #' @importFrom stats formula
 #' @importFrom stats contrasts
 #' @importFrom utils capture.output
+#' @importFrom methods is
 
 ## usethis namespace: end
 NULL

@@ -181,7 +181,7 @@ CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL,
   for (i in 1:length(left_levs)) {
     check = all.equal(left_levs[[i]], right_levs[[i]])
     check = isTRUE(check)
-    if (!check) stop("Left factors and right factors are not aligned")
+    if (!check) stop("Left factors and right factors levels do not agree")
   }
 
   X_right = right[left %in% X]
@@ -189,7 +189,8 @@ CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL,
 
   Y_var = as.character(formula)[2]
   y = data[, Y_var]
-  if (class(y) != "numeric") stop("Response is not numeric")
+
+  if (!is.numeric(y)) stop("Response is not numeric")
 
   X_Z_V = unlist(strsplit(as.character(formula)[3], " \\+"))
   X_Z_V = gsub(" ", "", X_Z_V)
@@ -401,12 +402,12 @@ CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL,
   for (i in 1:length(left_levs)) {
     check = all.equal(left_levs[[i]], right_levs[[i]])
     check = isTRUE(check)
-    if (!check) stop("Left factors and right factors are not aligned")
+    if (!check) stop("Left factors and right factors levels do not agree")
   }
 
   Y_var = as.character(formula)[2]
   y = data[, Y_var]
-  if (class(y) != "numeric") stop("Response is not numeric")
+  if (!is.numeric(y)) stop("Response is not numeric")
 
   x = data[, c(left, right)]
 
@@ -609,12 +610,12 @@ CRT_carryovereffect = function(formula, data, left, right, task, design = "Unifo
   for (i in 1:length(left_levs)) {
     check = all.equal(left_levs[[i]], right_levs[[i]])
     check = isTRUE(check)
-    if (!check) stop("Left factors and right factors are not aligned")
+    if (!check) stop("Left factors and right factors levels do not agree")
   }
 
   Y_var = as.character(formula)[2]
   y = data[, Y_var]
-  if (class(y) != "numeric") stop("Response is not numeric")
+  if (!is.numeric(y)) stop("Response is not numeric")
 
   x = data[, c(left, right, task)]
 
@@ -735,12 +736,12 @@ CRT_fatigueeffect = function(formula, data, left, right, task, respondent, profi
   for (i in 1:length(left_levs)) {
     check = all.equal(left_levs[[i]], right_levs[[i]])
     check = isTRUE(check)
-    if (!check) stop("Left factors and right factors are not aligned")
+    if (!check) stop("Left factors and right factors levels do not agree")
   }
 
   Y_var = as.character(formula)[2]
   y = data[, Y_var]
-  if (class(y) != "numeric") stop("Response is not numeric")
+  if (!is.numeric(y)) stop("Response is not numeric")
 
   x = data[, c(left, right, task, respondent)]
 

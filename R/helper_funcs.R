@@ -122,7 +122,7 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
   num_x_levs = levels(x[, xcols[1]])
 
   # checks
-  if (length(unique(sapply(x, class)[!(1:ncol(x)) %in% non_factor_idx])) > 1) stop("factors provided in formula are not all factors please supply non_factor_idx")
+  if (!(all(sapply(x[, !(1:ncol(x)) %in% non_factor_idx], function(x) is(x, "factor"))))) stop("factors provided in formula are not all factors please supply non_factor_idx")
 
   if (!all(in_levs %in% num_x_levs)) stop("in_levs supplied are not levels in X")
   if (length(left_idx) != length(right_idx)) stop("length left idx does not match right idx")
@@ -534,8 +534,8 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
 # Main helper function that performs CRT to test for no profile order effect
 get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, nfolds) {
 
-  if (unique(sapply(x[, left_idx[!(left_idx %in% non_factor_idx)]], class)) != "factor") stop("left and right factors are not all factors please supply non_factor_idx")
-
+  # checks
+  if (!(all(sapply(x[, !(1:ncol(x)) %in% non_factor_idx], function(x) is(x, "factor"))))) stop("factors provided in formula are not all factors please supply non_factor_idx")
 
   if (length(left_idx) != length(right_idx)) stop("length left idx does not match right idx")
 
@@ -729,7 +729,10 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
 # Main helper function that performs CRT to test for no carryover effect
 get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, seed, parallel, profileorder_constraint, task_var, resample_func, supplyown_resamples, nfolds) {
 
-  if (unique(sapply(x[, left_idx[!(left_idx %in% non_factor_idx)]], class)) != "factor") stop("left and right factors are not all factors please supply non_factor_idx")
+  # checks
+  if (!(all(sapply(x[, left_idx[!left_idx %in% non_factor_idx]], function(x) is(x, "factor"))))) stop("left factors are not all factors please supply non_factor_idx")
+
+  if (!(all(sapply(x[, right_idx[!right_idx %in% non_factor_idx]], function(x) is(x, "factor"))))) stop("right factors are not all factors please supply non_factor_idx")
 
   if (length(left_idx) != length(right_idx)) stop("length left idx does not match right idx")
 
@@ -1002,8 +1005,10 @@ get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, 
 
 # Main helper function that performs CRT to test for no fatigue effect
 get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, profileorder_constraint, task_var, respondent_var, nfolds) {
+  # checks
+  if (!(all(sapply(x[, left_idx[!left_idx %in% non_factor_idx]], function(x) is(x, "factor"))))) stop("left factors are not all factors please supply non_factor_idx")
 
-  if (unique(sapply(x[, left_idx[!(left_idx %in% non_factor_idx)]], class)) != "factor") stop("left and right factors are not all factors please supply non_factor_idx")
+  if (!(all(sapply(x[, right_idx[!right_idx %in% non_factor_idx]], function(x) is(x, "factor"))))) stop("right factors are not all factors please supply non_factor_idx")
 
   if (length(left_idx) != length(right_idx)) stop("length left idx does not match right idx")
 
