@@ -1,3 +1,7 @@
+## Resubmission
+This is a resubmission. In this version I have:
+* Addressed the issue in NOTE where if statement was used with class on a string. 
+
 ## Test environments
 * local R installation (macOS), R 4.1.3
 * macOS-latest (on GitHub Actions), (release)
