@@ -20,7 +20,8 @@ CRT_fatigueeffect(
   lambda = c(20, 30, 40),
   tol = 0.001,
   speedup = TRUE,
-  seed = sample(c(1:1000), size = 1)
+  seed = sample(c(1:1000), size = 1),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -79,6 +80,8 @@ computation time.}
 function run faster. It is always recommended to use default speedup=TRUE.}
 
 \item{seed}{Seed used for CRT procedure}
+
+\item{verbose}{Boolean indicating verbose output. Default verbose=TRUE}
 }
 \value{
 A list containing: \item{p_val}{A numeric value for the p-value testing
@@ -113,9 +116,9 @@ J = 5
 fatigue_df = immigrationdata
 fatigue_df$task = rep(1:J, nrow(fatigue_df)/J)
 fatigue_df$respondent = rep(1:(nrow(fatigue_df)/J), each = J)
-\dontrun{
+\donttest{
 fatigue_test = CRT_fatigueeffect(formula = form, data = fatigue_df, left = left,
-right = right, task = "task", respondent = "respondent", B = 100)
+right = right, task = "task", respondent = "respondent", B = 50)
 fatigue_test$p_val
 }
 }

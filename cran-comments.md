@@ -1,6 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version I have:
-* Addressed the issue in NOTE where if statement was used with class on a string. 
+* Addressed the issue of changing dontrun to donttest
+* Changed all print() to cat() with verbose option
+* Added copyright field in DESCRIPTION clearly indicating which files use copied code
 
 ## Test environments
 * local R installation (macOS), R 4.1.3
@@ -17,5 +19,5 @@ This is a resubmission. In this version I have:
 ## Reverse Dependencies
 There are no reverse dependencies to check.
 
-Note: This is the first submission. All tests listed under examples use "dontrun" because the algorithm is (by design) computationally expensive (close to 1 minute).
+Note: This is the first submission. All tests listed under examples use "donttest" because the algorithm is (by design) computationally expensive (close to 1 minute).
 

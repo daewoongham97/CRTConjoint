@@ -20,7 +20,8 @@ CRT_carryovereffect(
   nfolds = 3,
   lambda = c(20, 30, 40),
   tol = 0.001,
-  seed = sample(c(1:1000), size = 1)
+  seed = sample(c(1:1000), size = 1),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -83,6 +84,8 @@ fit for HierNet. Default is tol=1e-3. WARNING: Do not increase as it greatly inc
 computation time.}
 
 \item{seed}{Seed used for CRT procedure}
+
+\item{verbose}{Boolean indicating verbose output. Default verbose=TRUE}
 }
 \value{
 A list containing: \item{p_val}{A numeric value for the p-value testing
@@ -193,9 +196,9 @@ resample_func_immigration = function(x, seed = sample(c(0, 1000), size = 1), lef
  return(resampled_df)
 }
 
-\dontrun{
+\donttest{
 own_resamples = list()
-B = 100
+B = 50
 for (i in 1:B) {
  newdf = resample_func_immigration(carryover_df, left_idx = 1:9, right_idx = 10:18, seed = i)
  own_resamples[[i]] = newdf

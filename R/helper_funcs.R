@@ -116,9 +116,8 @@ CO_stat = function(hiernet_object, idx) {
   return(ts)
 }
 
-
 # Main helper function that performs CRT to test for Y independent of X given Z
-get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, profileorder_constraint, lambda, non_factor_idx, in_levs, analysis, p, resample_func_1, resample_func_2, tol, resample_X, full_X, restricted_X, left_allowed, right_allowed, forced, speedup, seed, supplyown_resamples, parallel, nfolds) {
+get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, profileorder_constraint, lambda, non_factor_idx, in_levs, analysis, p, resample_func_1, resample_func_2, tol, resample_X, full_X, restricted_X, left_allowed, right_allowed, forced, speedup, seed, supplyown_resamples, parallel, nfolds, verbose) {
   num_x_levs = levels(x[, xcols[1]])
 
   # checks
@@ -295,8 +294,9 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
 
     # obtains CV lambda
     best_lam = hierNet_logistic_CV(lambda, nfolds = nfolds, X = Z_long, y_var = Z_df$Y, tol = tol, constraint = profileorder_constraint, seed = seed)
-
-    print("Initial step completed: finished computing cross validated lambda")
+    if (verbose) {
+      cat("Initial step completed: finished computing cross validated lambda")
+    }
 
   } else {
     best_lam = hierNet_logistic_CV(lambda, nfolds = nfolds, X = as.matrix(X), y_var = final_df$Y, tol = tol, constraint = profileorder_constraint, seed = seed)
@@ -368,16 +368,18 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
 
   obs_test_stat = hiernet_group(fit, idx = idx_in, X = X, analysis = analysis, group = group)
 
-  print("Initial step completed: finished computing observed test statistic. Now entering resampling step.....")
-
   ## parallel computing setup
   if (parallel) {
     cl <- snow::makeCluster(num_cores)
     doSNOW::registerDoSNOW(cl)
-    iterations <- B
-    pb <- utils::txtProgressBar(max = iterations, style = 3)
-    progress <- function(n) utils::setTxtProgressBar(pb, n)
-    opts <- list(progress = progress)
+    if (verbose) {
+      iterations <- B
+      pb <- utils::txtProgressBar(max = iterations, style = 3)
+      progress <- function(n) utils::setTxtProgressBar(pb, n)
+      opts <- list(progress = progress)
+    } else {
+      opts = NULL
+    }
     ##
 
     e <- foreach::foreach(j = 1:iterations, .combine = rbind,
@@ -510,7 +512,9 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
       invisible(capture.output(fit <- hierNet_logistic(as.matrix(X), final_df$Y, lam= best_lam, tol = tol, aa = aa)))
 
       e[j] = hiernet_group(fit, idx = idx_in, X = X, analysis = 0, group = group)
-      print(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      if (verbose) {
+        cat(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      }
     }
 
 
@@ -532,7 +536,7 @@ get_CRT_pval = function(x, y, xcols, left_idx, right_idx, design, B, num_cores, 
 }
 
 # Main helper function that performs CRT to test for no profile order effect
-get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, nfolds) {
+get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, nfolds, verbose) {
 
   # checks
   if (!(all(sapply(x[, !(1:ncol(x)) %in% non_factor_idx], function(x) is(x, "factor"))))) stop("factors provided in formula are not all factors please supply non_factor_idx")
@@ -581,6 +585,10 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
 
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X_initial), final_df$Y, lam= best_lam, tol = tol)))
 
+      if (verbose) {
+        cat("Initial step completed: finished computing cross validated lambda")
+      }
+
     } else {
 
       best_lam = hierNet_logistic_CV(lambda, nfolds = nfolds, X = X, y_var = final_df$Y, tol = tol, constraint = FALSE, seed = seed)
@@ -613,16 +621,18 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
 
   obs_test_stat = PO_stat(fit, in_idx_left, in_idx_right, in_idx_respondent)
 
-  print("Initial step 1 complete: Finished computing observed test statistic. Now entering resampling step.....")
-
   ## parallel computing setup
   if (parallel) {
     cl <- snow::makeCluster(num_cores)
     doSNOW::registerDoSNOW(cl)
-    iterations <- B
-    pb <- utils::txtProgressBar(max = iterations, style = 3)
-    progress <- function(n) utils::setTxtProgressBar(pb, n)
-    opts <- list(progress = progress)
+    if (verbose) {
+      iterations <- B
+      pb <- utils::txtProgressBar(max = iterations, style = 3)
+      progress <- function(n) utils::setTxtProgressBar(pb, n)
+      opts <- list(progress = progress)
+    } else {
+      opts = NULL
+    }
     ##
     e <- foreach::foreach(j = 1:iterations, .combine = rbind,
                           .options.snow = opts) %dopar%
@@ -705,7 +715,9 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X_initial), final_df_initial$Y, lam= best_lam, tol = tol, aa = aa)))
 
       e[j] = PO_stat(initial, in_idx_left, in_idx_right, in_idx_respondent)
-      print(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      if (verbose) {
+        cat(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      }
     }
 
 
@@ -727,7 +739,7 @@ get_profileordereffect = function(x, y, left_idx, right_idx, B, num_cores, lambd
 }
 
 # Main helper function that performs CRT to test for no carryover effect
-get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, seed, parallel, profileorder_constraint, task_var, resample_func, supplyown_resamples, nfolds) {
+get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, seed, parallel, profileorder_constraint, task_var, resample_func, supplyown_resamples, nfolds, verbose) {
 
   # checks
   if (!(all(sapply(x[, left_idx[!left_idx %in% non_factor_idx]], function(x) is(x, "factor"))))) stop("left factors are not all factors please supply non_factor_idx")
@@ -809,8 +821,9 @@ get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, 
 
 
   best_lam = hierNet_logistic_CV(lambda, nfolds = nfolds, X = Z_mat, y_var = final_df$Y, tol = tol, constraint = profileorder_constraint, seed = seed, fold_idx = random_idx)
-
-  print("Initial step completed: finished computing cross validated lambda")
+  if (verbose) {
+   cat("Initial step completed: finished computing cross validated lambda")
+  }
 
   if (is.null(resample_func)) {
     resample_func = function(x, seed = sample(c(0, 1000), size = 1), left_idx, right_idx) {
@@ -882,16 +895,18 @@ get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, 
 
   obs_test_stat = CO_stat(fit, idx)
 
-  print("Initial step completed: finished computing observed test statistic. Now entering resampling step.....")
-
   ## parallel computing setup
   if (parallel) {
     cl <- snow::makeCluster(num_cores)
     doSNOW::registerDoSNOW(cl)
-    iterations <- B
-    pb <- utils::txtProgressBar(max = iterations, style = 3)
-    progress <- function(n) utils::setTxtProgressBar(pb, n)
-    opts <- list(progress = progress)
+    if (verbose) {
+      iterations <- B
+      pb <- utils::txtProgressBar(max = iterations, style = 3)
+      progress <- function(n) utils::setTxtProgressBar(pb, n)
+      opts <- list(progress = progress)
+    } else {
+      opts = NULL
+    }
     ##
     e <- foreach::foreach(j = 1:iterations, .combine = rbind,
                           .options.snow = opts) %dopar%
@@ -985,7 +1000,9 @@ get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, 
       invisible(capture.output(initial <- hierNet_logistic(as.matrix(X_initial), final_df_initial$Y, lam= best_lam, tol = tol, aa = aa)))
 
       e[j] = CO_stat(initial, idx)
-      print(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      if (verbose) {
+        cat(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      }
     }
 
 
@@ -1004,7 +1021,7 @@ get_carryovereffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, 
 }
 
 # Main helper function that performs CRT to test for no fatigue effect
-get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, profileorder_constraint, task_var, respondent_var, nfolds) {
+get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, non_factor_idx, tol, speedup, seed, parallel, profileorder_constraint, task_var, respondent_var, nfolds, verbose) {
   # checks
   if (!(all(sapply(x[, left_idx[!left_idx %in% non_factor_idx]], function(x) is(x, "factor"))))) stop("left factors are not all factors please supply non_factor_idx")
 
@@ -1052,8 +1069,9 @@ get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, no
 
     # obtains CV lambda
     best_lam = hierNet_logistic_CV(lambda, nfolds = nfolds, X = Z_long, y_var = Z_df$Y, tol = tol, constraint = profileorder_constraint, seed = seed)
-
-    print("Initial step completed: finished computing cross validated lambda")
+    if (verbose) {
+      cat("Initial step completed: finished computing cross validated lambda")
+    }
   } else {
     best_lam = hierNet_logistic_CV(lambda, nfolds = nfolds, X = as.matrix(X), y_var = final_df$Y, tol = tol, constraint = profileorder_constraint, seed = seed)
 
@@ -1107,16 +1125,18 @@ get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, no
 
   obs_test_stat = sum(I^2)/2
 
-  print("Initial step completed: finished computing observed test statistic. Now entering resampling step.....")
-
   ## parallel computing setup
   if (parallel) {
     cl <- snow::makeCluster(num_cores)
     doSNOW::registerDoSNOW(cl)
-    iterations <- B
-    pb <- utils::txtProgressBar(max = iterations, style = 3)
-    progress <- function(n) utils::setTxtProgressBar(pb, n)
-    opts <- list(progress = progress)
+    if (verbose) {
+      iterations <- B
+      pb <- utils::txtProgressBar(max = iterations, style = 3)
+      progress <- function(n) utils::setTxtProgressBar(pb, n)
+      opts <- list(progress = progress)
+    } else {
+      opts = NULL
+    }
     ##
     e <- foreach::foreach(j = 1:iterations, .combine = rbind,
                           .options.snow = opts) %dopar%
@@ -1196,7 +1216,9 @@ get_fatigueeffect = function(x, y, left_idx, right_idx, B, num_cores, lambda, no
       I = (I_1 + I_2)/2
 
       e[j] = sum(I^2)/2
-      print(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      if (verbose) {
+        cat(paste0("Done with task: ",j, " out of ", B, " resamples"))
+      }
     }
 
 

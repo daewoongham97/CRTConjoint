@@ -27,7 +27,7 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Jacob Bien \email{jbien@usc.edu} [contributor]
+  \item Jacob Bien \email{jbien@usc.edu} [contributor, copyright holder]
 }
 
 }

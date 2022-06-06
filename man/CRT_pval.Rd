@@ -26,7 +26,8 @@ CRT_pval(
   tol = 0.001,
   speedup = TRUE,
   seed = sample(c(1:1000), size = 1),
-  analysis = 0
+  analysis = 0,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -121,6 +122,8 @@ Default analysis = 0 to not return any top interactions. If analysis > 0,
 for example analysis = 2, then the top two strongest interactions contribution to
 the test statistic along with which interaction is returned.
 NOTE: this is purely for exploratory analysis.}
+
+\item{verbose}{Boolean indicating verbose output. Default verbose=TRUE}
 }
 \value{
 A list containing: \item{p_val}{A numeric value for the p-value testing
@@ -154,7 +157,7 @@ FeatExp + FeatPlans + FeatTrips + FeatLang + ppage + ppeducat + ppethm + ppgende
 left = colnames(immigrationdata)[1:9]
 right = colnames(immigrationdata)[10:18]
 
-\dontrun{
+\donttest{
 # Testing whether edcuation matters for immigration preferences
 education_test = CRT_pval(formula = form, data = immigrationdata, X = "FeatEd",
  left = left, right = right, non_factor = "ppage", B = 100, analysis = 2)
@@ -168,7 +171,7 @@ constraint_randomization[["FeatJob"]] = c("Financial analyst","Computer programm
 constraint_randomization[["FeatEd"]] = c("Equivalent to completing two years of
 college in the US", "Equivalent to completing a graduate degree in the US",
  "Equivalent to completing a college degree in the US")
-\dontrun{
+\donttest{
 job_test = CRT_pval(formula = form, data = immigrationdata, X = "FeatJob",
 left = left, right = right, design = "Constrained Uniform",
 constraint_randomization = constraint_randomization, non_factor = "ppage", B = 100)
@@ -186,13 +189,13 @@ country_data$FeatCountry_2[country_data$FeatCountry_2 \%in\% c("Germany", "Franc
  "Poland")] = "Europe"
 country_data$FeatCountry = factor(country_data$FeatCountry)
 country_data$FeatCountry_2 = factor(country_data$FeatCountry_2)
-\dontrun{
+\donttest{
 mexico_Europe_test = CRT_pval(formula = form, data = country_data, X = "FeatCountry",
 left = left, right = right, design = "Nonuniform",
 in_levs = c("Mexico", "Europe"), p = c(0.25, 0.75), non_factor = "ppage", B = 100,
 analysis = 2)
 }
-\dontrun{
+\donttest{
 # example case with supplying own resamples
 resample_Mexico_Europe = function(country_data) {
  resamples_1 = sample(c("Mexico", "Europe"), size = nrow(country_data),
@@ -212,11 +215,11 @@ in_levs = c("Mexico", "Europe"), supplyown_resamples = own_resamples,
 non_factor = "ppage", B = 100, analysis = 2)
 }
 # example case with forcing with candidate gender
-\dontrun{
+\donttest{
 mexico_Europe_test_force = CRT_pval(formula = form, data = country_data,
 X = "FeatCountry", left = left, right = right, design = "Nonuniform",
 in_levs = c("Mexico", "Europe"), p = c(0.25, 0.75), forced_var = "FeatGender",
-non_factor = "ppage", B = 100, analysis = 0)
+non_factor = "ppage", B = 100)
 }
 }
 \references{

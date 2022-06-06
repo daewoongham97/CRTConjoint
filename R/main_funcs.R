@@ -80,6 +80,7 @@
 #' for example analysis = 2, then the top two strongest interactions contribution to
 #' the test statistic along with which interaction is returned.
 #' NOTE: this is purely for exploratory analysis.
+#' @param verbose Boolean indicating verbose output. Default verbose=TRUE
 #'
 #' @return A list containing: \item{p_val}{A numeric value for the p-value testing
 #' Y independent of X given Z.}
@@ -105,7 +106,7 @@
 #' left = colnames(immigrationdata)[1:9]
 #' right = colnames(immigrationdata)[10:18]
 #'
-#' \dontrun{
+#' \donttest{
 #' # Testing whether edcuation matters for immigration preferences
 #' education_test = CRT_pval(formula = form, data = immigrationdata, X = "FeatEd",
 #'  left = left, right = right, non_factor = "ppage", B = 100, analysis = 2)
@@ -119,7 +120,7 @@
 #' constraint_randomization[["FeatEd"]] = c("Equivalent to completing two years of
 #' college in the US", "Equivalent to completing a graduate degree in the US",
 #'  "Equivalent to completing a college degree in the US")
-#' \dontrun{
+#' \donttest{
 #' job_test = CRT_pval(formula = form, data = immigrationdata, X = "FeatJob",
 #' left = left, right = right, design = "Constrained Uniform",
 #' constraint_randomization = constraint_randomization, non_factor = "ppage", B = 100)
@@ -137,13 +138,13 @@
 #'  "Poland")] = "Europe"
 #' country_data$FeatCountry = factor(country_data$FeatCountry)
 #' country_data$FeatCountry_2 = factor(country_data$FeatCountry_2)
-#' \dontrun{
+#' \donttest{
 #' mexico_Europe_test = CRT_pval(formula = form, data = country_data, X = "FeatCountry",
 #' left = left, right = right, design = "Nonuniform",
 #' in_levs = c("Mexico", "Europe"), p = c(0.25, 0.75), non_factor = "ppage", B = 100,
 #' analysis = 2)
 #' }
-#' \dontrun{
+#' \donttest{
 #' # example case with supplying own resamples
 #' resample_Mexico_Europe = function(country_data) {
 #'  resamples_1 = sample(c("Mexico", "Europe"), size = nrow(country_data),
@@ -163,13 +164,13 @@
 #' non_factor = "ppage", B = 100, analysis = 2)
 #' }
 #' # example case with forcing with candidate gender
-#' \dontrun{
+#' \donttest{
 #' mexico_Europe_test_force = CRT_pval(formula = form, data = country_data,
 #' X = "FeatCountry", left = left, right = right, design = "Nonuniform",
 #' in_levs = c("Mexico", "Europe"), p = c(0.25, 0.75), forced_var = "FeatGender",
-#' non_factor = "ppage", B = 100, analysis = 0)
+#' non_factor = "ppage", B = 100)
 #' }
-CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL, constraint_randomization = NULL, supplyown_resamples = NULL, profileorder_constraint = TRUE, in_levs = NULL, forced_var = NULL, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, speedup = TRUE, seed = sample(c(1:1000), size = 1), analysis = 0) {
+CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL, constraint_randomization = NULL, supplyown_resamples = NULL, profileorder_constraint = TRUE, in_levs = NULL, forced_var = NULL, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, speedup = TRUE, seed = sample(c(1:1000), size = 1), analysis = 0, verbose = TRUE) {
   start_time = Sys.time()
   # processing stage
 
@@ -308,7 +309,7 @@ CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL,
 
   out = get_CRT_pval(x = x, y = y, xcols = xcols, left_idx = left_idx, right_idx = right_idx, design = design, B= B, forced = forced, lambda = lambda, non_factor_idx = non_factor_idx, in_levs = in_levs, analysis = analysis, p = p, resample_func_1 = resample_func_1, resample_func_2 = resample_func_2, supplyown_resamples = supplyown_resamples, resample_X = resample_X,
                      full_X = full_X, restricted_X = restricted_X, left_allowed = left_allowed, right_allowed = right_allowed,
-                     tol = tol, speedup = speedup, parallel = parallel, num_cores = num_cores, profileorder_constraint = profileorder_constraint, nfolds = nfolds, seed = seed)
+                     tol = tol, speedup = speedup, parallel = parallel, num_cores = num_cores, profileorder_constraint = profileorder_constraint, nfolds = nfolds, seed = seed, verbose = verbose)
 
   end_time = Sys.time()
 
@@ -363,6 +364,7 @@ CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL,
 #' @param speedup Boolean indicating whether to employ computational tricks to
 #' make function run faster. It is always recommended to use default speedup=TRUE.
 #' @param seed Seed used for CRT procedure
+#' @param verbose Boolean indicating verbose output. Default verbose=TRUE
 #'
 #' @return A list containing: \item{p_val}{A numeric value for the p-value testing
 #' profile order effect.}
@@ -387,12 +389,12 @@ CRT_pval = function(formula, data, X, left, right, design = "Uniform", p = NULL,
 #' right = colnames(immigrationdata)[10:18]
 #'
 #' # Testing if profile order effect is present or not in immigration data
-#' \dontrun{
+#' \donttest{
 #' profileorder_test = CRT_profileordereffect(formula = form, data = immigrationdata,
-#'  left = left, right = right, B = 100)
+#'  left = left, right = right, B = 50)
 #' profileorder_test$p_val
 #' }
-CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, speedup = TRUE, seed = sample(c(1:1000), size = 1)) {
+CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, speedup = TRUE, seed = sample(c(1:1000), size = 1), verbose = TRUE) {
   start_time = Sys.time()
   # processing stage
 
@@ -420,7 +422,7 @@ CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL,
   right_idx = (1:ncol(x))[colnames(x) %in% right]
 
 
-  out = get_profileordereffect(x = x, y = y, left_idx = left_idx, right_idx = right_idx, B= B, lambda = lambda, non_factor_idx = non_factor_idx, tol = tol, speedup = speedup, parallel = parallel, num_cores = num_cores, nfolds = nfolds, seed = seed)
+  out = get_profileordereffect(x = x, y = y, left_idx = left_idx, right_idx = right_idx, B= B, lambda = lambda, non_factor_idx = non_factor_idx, tol = tol, speedup = speedup, parallel = parallel, num_cores = num_cores, nfolds = nfolds, seed = seed, verbose = verbose)
 
   end_time = Sys.time()
 
@@ -486,6 +488,7 @@ CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL,
 #' fit for HierNet. Default is tol=1e-3. WARNING: Do not increase as it greatly increases
 #'  computation time.
 #' @param seed Seed used for CRT procedure
+#' @param verbose Boolean indicating verbose output. Default verbose=TRUE
 #'
 #' @return A list containing: \item{p_val}{A numeric value for the p-value testing
 #' carryover effect.}
@@ -588,9 +591,9 @@ CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL,
 #'  return(resampled_df)
 #' }
 #'
-#'\dontrun{
+#'\donttest{
 #'own_resamples = list()
-#' B = 100
+#' B = 50
 #' for (i in 1:B) {
 #'  newdf = resample_func_immigration(carryover_df, left_idx = 1:9, right_idx = 10:18, seed = i)
 #'  own_resamples[[i]] = newdf
@@ -599,7 +602,7 @@ CRT_profileordereffect = function(formula, data, left, right, non_factor = NULL,
 #' right = right, task = "task", supplyown_resamples = own_resamples, B = B)
 #' carryover_test$p_val
 #' }
-CRT_carryovereffect = function(formula, data, left, right, task, design = "Uniform", supplyown_resamples = NULL, profileorder_constraint = TRUE, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, seed = sample(c(1:1000), size = 1)) {
+CRT_carryovereffect = function(formula, data, left, right, task, design = "Uniform", supplyown_resamples = NULL, profileorder_constraint = TRUE, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, seed = sample(c(1:1000), size = 1), verbose = TRUE) {
   start_time = Sys.time()
   # processing stage
   if (!(design %in% c("Uniform", "Manual"))) stop("Design should be either Uniform or Manual")
@@ -635,7 +638,7 @@ CRT_carryovereffect = function(formula, data, left, right, task, design = "Unifo
   if (design == "Manual") {
     resample_func = c("Not Null")
   }
-  out = get_carryovereffect(x = x, y = y, left_idx = left_idx, right_idx = right_idx, task_var = task_var, resample_func = resample_func, supplyown_resamples = supplyown_resamples, profileorder_constraint = profileorder_constraint, B= B, lambda = lambda, non_factor_idx = non_factor_idx, tol = tol, parallel = parallel, num_cores = num_cores, nfolds = nfolds, seed = seed)
+  out = get_carryovereffect(x = x, y = y, left_idx = left_idx, right_idx = right_idx, task_var = task_var, resample_func = resample_func, supplyown_resamples = supplyown_resamples, profileorder_constraint = profileorder_constraint, B= B, lambda = lambda, non_factor_idx = non_factor_idx, tol = tol, parallel = parallel, num_cores = num_cores, nfolds = nfolds, seed = seed, verbose = verbose)
 
   end_time = Sys.time()
 
@@ -694,6 +697,7 @@ CRT_carryovereffect = function(formula, data, left, right, task, design = "Unifo
 #' @param speedup Boolean indicating whether to employ computational tricks to make
 #' function run faster. It is always recommended to use default speedup=TRUE.
 #' @param seed Seed used for CRT procedure
+#' @param verbose Boolean indicating verbose output. Default verbose=TRUE
 #'
 #' @return A list containing: \item{p_val}{A numeric value for the p-value testing
 #' fatigue effect.}
@@ -721,12 +725,12 @@ CRT_carryovereffect = function(formula, data, left, right, task, design = "Unifo
 #' fatigue_df = immigrationdata
 #' fatigue_df$task = rep(1:J, nrow(fatigue_df)/J)
 #' fatigue_df$respondent = rep(1:(nrow(fatigue_df)/J), each = J)
-#' \dontrun{
+#' \donttest{
 #' fatigue_test = CRT_fatigueeffect(formula = form, data = fatigue_df, left = left,
-#' right = right, task = "task", respondent = "respondent", B = 100)
+#' right = right, task = "task", respondent = "respondent", B = 50)
 #' fatigue_test$p_val
 #' }
-CRT_fatigueeffect = function(formula, data, left, right, task, respondent, profileorder_constraint = TRUE, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, speedup = TRUE, seed = sample(c(1:1000), size = 1)) {
+CRT_fatigueeffect = function(formula, data, left, right, task, respondent, profileorder_constraint = TRUE, non_factor = NULL, B = 200, parallel = TRUE,num_cores = 2,nfolds = 3, lambda = c(20, 30, 40), tol = 1e-3, speedup = TRUE, seed = sample(c(1:1000), size = 1), verbose = TRUE) {
   start_time = Sys.time()
   # processing stage
 
@@ -756,7 +760,7 @@ CRT_fatigueeffect = function(formula, data, left, right, task, respondent, profi
   task_var = which(colnames(x) == task)
   respondent_var = which(colnames(x) == respondent)
 
-  out = get_fatigueeffect(x = x, y = y, left_idx = left_idx, right_idx = right_idx, task_var = task_var, respondent_var = respondent_var, profileorder_constraint = profileorder_constraint, B= B, lambda = lambda, non_factor_idx = non_factor_idx, tol = tol, speedup = speedup, parallel = parallel, num_cores = num_cores, nfolds = nfolds, seed = seed)
+  out = get_fatigueeffect(x = x, y = y, left_idx = left_idx, right_idx = right_idx, task_var = task_var, respondent_var = respondent_var, profileorder_constraint = profileorder_constraint, B= B, lambda = lambda, non_factor_idx = non_factor_idx, tol = tol, speedup = speedup, parallel = parallel, num_cores = num_cores, nfolds = nfolds, seed = seed, verbose = verbose)
 
   end_time = Sys.time()
 

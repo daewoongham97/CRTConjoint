@@ -17,7 +17,8 @@ CRT_profileordereffect(
   lambda = c(20, 30, 40),
   tol = 0.001,
   speedup = TRUE,
-  seed = sample(c(1:1000), size = 1)
+  seed = sample(c(1:1000), size = 1),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ as it greatly increases computation time.}
 make function run faster. It is always recommended to use default speedup=TRUE.}
 
 \item{seed}{Seed used for CRT procedure}
+
+\item{verbose}{Boolean indicating verbose output. Default verbose=TRUE}
 }
 \value{
 A list containing: \item{p_val}{A numeric value for the p-value testing
@@ -98,9 +101,9 @@ left = colnames(immigrationdata)[1:9]
 right = colnames(immigrationdata)[10:18]
 
 # Testing if profile order effect is present or not in immigration data
-\dontrun{
+\donttest{
 profileorder_test = CRT_profileordereffect(formula = form, data = immigrationdata,
- left = left, right = right, B = 100)
+ left = left, right = right, B = 50)
 profileorder_test$p_val
 }
 }

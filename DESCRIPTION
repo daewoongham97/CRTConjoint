@@ -5,7 +5,7 @@ Authors@R: c(
 	person("Dae Woong", "Ham", email = "daewoongham@g.harvard.edu", role = c("aut", "cre")),
 	person("Kosuke", "Imai", email = "imai@harvard.edu", role = "aut"),
 	person("Lucas", "Janson", email = "ljanson@fas.harvard.edu",role = "aut"),
-	person("Jacob", "Bien", email = "jbien@usc.edu",role = "ctb"))
+	person("Jacob", "Bien", email = "jbien@usc.edu",role = c("ctb", "cph")))
 Maintainer: Dae Woong Ham <daewoongham@g.harvard.edu>
 Description: Computes p-value according to the CRT using the HierNet test statistic. For more details, see Ham, Imai, Janson (2022) "Using Machine Learning to Test Causal Hypotheses in Conjoint Analysis" <arXiv:2201.08343>.
 License: GPL (>= 3)
@@ -30,3 +30,4 @@ Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/daewoongham97/CRTConjoint
 BugReports: https://github.com/daewoongham97/CRTConjoint/issues
+Copyright: (c) 2022 Dae Woong Ham. Code in helper_hierNet.R, hierNet.c, and hierNet_init.c are taken (with explicit permission) from (c) 2020 Jacob Bien.
