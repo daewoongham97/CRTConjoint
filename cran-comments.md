@@ -1,8 +1,6 @@
 ## Resubmission
 This is a resubmission. In this version I have:
-* Addressed the issue of changing dontrun to donttest
-* Changed all print() to cat() with verbose option
-* Added copyright field in DESCRIPTION clearly indicating which files use copied code
+* Addressed the issue of cat("WARNING: center = FALSE ....") in helper_hierNet.R by removing this print message.
 
 ## Test environments
 * local R installation (macOS), R 4.1.3

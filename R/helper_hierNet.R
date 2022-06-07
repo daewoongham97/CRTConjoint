@@ -49,8 +49,6 @@ hierNet_logistic = function(x, y, lam, delta=1e-8, diagonal=FALSE, strong=FALSE,
   stopifnot(is.finite(x), is.finite(y), is.finite(lam), is.finite(delta))
   lam.l1 <- lam * (1 - delta)
   lam.l2 <- lam * delta
-  if (!center)
-    cat("WARNING: center=FALSE should almost never be used.  This option is available for special uses only.", fill = TRUE)
   x <- scale(x, center = center, scale = stand.main)
   mx <- attr(x, "scaled:center")
   sx <- attr(x, "scaled:scale")
